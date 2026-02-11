@@ -1,0 +1,212 @@
+import java.util.Scanner;
+
+interface Secure{
+    boolean authenticate(String input);
+}
+
+abstract class Account{
+
+    protected double balance;
+
+    public void deposit(double amount){
+        if (amount > 0) {
+            balance += amount;
+        } else{
+            System.out.println("Amount is invalid....");
+        }
+    }
+
+    public abstract void withdraw(double withdrawAmount);
+}
+
+class SavingAccount extends Account{
+
+    @Override
+    public void withdraw(double withdrawAmount) {
+        if (balance - withdrawAmount > 500){
+            balance-=withdrawAmount;
+        }else {
+            System.out.println("Minimum bal should be 500");
+        }
+
+    }
+}
+
+class CurrentAccount extends Account{
+
+    @Override
+    public void withdraw(double withdrawAmount) {
+
+        if (withdrawAmount > balance){
+            System.out.println("Can't withdrawal...");
+        }else {
+            balance-=withdrawAmount;
+        }
+    }
+}
+
+class Person{
+    protected int id;
+    protected String name;
+
+    public Person(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+
+}
+
+class Customer extends Person implements Secure{
+
+    private String password;
+    private int attempt = 0;
+    private boolean locked = false;
+    private Account account;
+
+    public Customer(int id , String name , String password , Account account){
+        super(id , name);
+        this.password = password;
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getAttempt() {
+        return attempt;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+    @Override
+    public boolean authenticate(String input) {
+
+        if (input.equals(password)){
+            attempt = 0;
+            return true;
+        }else{
+            attempt++; // 3
+            if (attempt == 3){
+                System.out.println("Account is blocked");
+            }else {
+                System.out.println("Password is wrong... try again");
+            }
+            return false;
+        }
+
+    }
+}
+
+
+class Bank{
+
+    Customer[] c = new Customer[10];
+    int customerCount = 0;
+
+    public void addCustomer(Customer customer){
+        c[0] = customer;
+        System.out.println("Account Created Successfully");
+        System.out.println("name : "+c[0].getName() + " Acc No : "+c[0].getAccount());
+
+    }
+
+    public Customer findById(int id){
+
+        for (int i = 0; i < customerCount; i++) {  // 5
+            if (c[customerCount].getId() == id){
+               return c[id];
+            }else {
+                System.out.println("Account Id doesn't exist....");
+            }
+        }
+        return null;
+    }
+
+    public void showAllCustomerDetails(){
+        for (int i = 0; i < customerCount; i++) {
+            System.out.println("name : "+c[customerCount].getName() + " Acc No : "+c[customerCount].getAccount());
+        }
+    }
+}
+
+public class BankingApplication {
+
+   static Scanner scanner = new Scanner(System.in);
+   static Bank bank = new Bank();
+
+    public static void main(String[] args) {
+
+        while (true){
+
+            System.out.println("--------------WELCOME TO PISOFT BANK ------------");
+            System.out.println("1. Create Account");
+            System.out.println("2. Login");
+            System.out.println("3. Show All Customer Details");
+            System.out.println("4. Exit");
+
+            System.out.print("Enter your choice : ");
+            int input = scanner.nextInt();
+
+            switch (input){
+
+                case 1 -> createAccount();
+                case 2 -> login();
+                case 3 -> bank.showAllCustomerDetails();
+                case 4 ->{
+                    System.out.println("Thankyou .....");
+                    return;
+                }
+
+
+            }
+
+        }
+
+
+
+    }
+
+    private static void login() {
+    }
+
+    private static void createAccount() {
+
+        System.out.print("Enter your Id : ");
+        int id = scanner.nextInt();
+
+        scanner.nextLine();
+
+        System.out.print("Enter your Name : ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter your password : ");
+        String password = scanner.nextLine();
+
+        System.out.print("Enter your Account : ( 1. Saving Account : 2. Current Account  ) ");
+        int accChoice = scanner.nextInt();
+
+        Account account  =  accChoice == 1 ? new SavingAccount() : new CurrentAccount();
+
+        Customer customer = new Customer(id , name , password , account);
+        bank.addCustomer(customer);
+
+    }
+
+}
