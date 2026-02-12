@@ -8,12 +8,16 @@ abstract class Account{
 
     protected double balance;
 
-    public void deposit(double amount){
+    public void deposit(double amount){  // 1000
         if (amount > 0) {
-            balance += amount;
+            balance += amount; // 1500
         } else{
             System.out.println("Amount is invalid....");
         }
+    }
+
+    public double getBalance() {
+        return balance;
     }
 
     public abstract void withdraw(double withdrawAmount);
@@ -22,7 +26,7 @@ abstract class Account{
 class SavingAccount extends Account{
 
     @Override
-    public void withdraw(double withdrawAmount) {
+    public void withdraw(double withdrawAmount) {  // 1000  - 600
         if (balance - withdrawAmount > 500){
             balance-=withdrawAmount;
         }else {
@@ -44,6 +48,7 @@ class CurrentAccount extends Account{
         }
     }
 }
+
 
 class Person{
     protected int id;
@@ -121,17 +126,15 @@ class Bank{
     int customerCount = 0;
 
     public void addCustomer(Customer customer){
-        c[0] = customer;
+        c[customerCount++] = customer;
         System.out.println("Account Created Successfully");
-        System.out.println("name : "+c[0].getName() + " Acc No : "+c[0].getAccount());
-
     }
 
     public Customer findById(int id){
 
         for (int i = 0; i < customerCount; i++) {  // 5
-            if (c[customerCount].getId() == id){
-               return c[id];
+            if (c[i].getId() == id){
+               return c[i];
             }else {
                 System.out.println("Account Id doesn't exist....");
             }
@@ -141,7 +144,7 @@ class Bank{
 
     public void showAllCustomerDetails(){
         for (int i = 0; i < customerCount; i++) {
-            System.out.println("name : "+c[customerCount].getName() + " Acc No : "+c[customerCount].getAccount());
+            System.out.println("Account Id : "+c[i].getId() + " name : "+c[i].getName() + " Acc No : "+c[i].getAccount().getBalance());
         }
     }
 }
@@ -152,7 +155,7 @@ public class BankingApplication {
    static Bank bank = new Bank();
 
     public static void main(String[] args) {
-
+        Bank bank = new Bank();
         while (true){
 
             System.out.println("--------------WELCOME TO PISOFT BANK ------------");
@@ -172,7 +175,7 @@ public class BankingApplication {
                 case 4 ->{
                     System.out.println("Thankyou .....");
                     return;
-                }
+                }default -> System.out.println("Choice is Invalid");
 
 
             }
@@ -184,7 +187,29 @@ public class BankingApplication {
     }
 
     private static void login() {
+        System.out.print("Enter your Account Id : ");
+        int accId = scanner.nextInt();
+
+        Customer customer = bank.findById(accId);
+        System.out.println("customer : "+customer.getId());
+        if (customer.getId() <= 0){
+            System.out.println("Acc Id doesn't existssss");
+            return;
+        }
+
+        System.out.print("Enter Your Passowrd");
+        String password = scanner.next();
+
+        boolean authenticate = customer.authenticate(password);
+
+        if (authenticate){
+            showAllCustomerMenu(customer);
+        }
+
+
     }
+
+
 
     private static void createAccount() {
 
@@ -209,4 +234,62 @@ public class BankingApplication {
 
     }
 
+
+    private static void showAllCustomerMenu(Customer customer) {
+
+        while (true){
+
+            System.out.println("1. Deposit");
+            System.out.println("2. Withdraw");
+            System.out.println("3. Balance");
+            System.out.println("4. Bank to Bank Transfer");
+            System.out.println("5. Exit");
+
+            System.out.println("----------------------------------");
+
+            System.out.print("Enter your choice...");
+            int choice = scanner.nextInt();
+
+
+            switch (choice){
+
+                case 1 -> deposit(customer);
+                case 2 -> withdrawMoney(customer);
+                case 3 -> showBalance(customer);
+                case 4 -> bankToBankTransfer();
+                case 5 ->{
+                    System.out.println("Carry on ...");
+                    return;
+                }default -> System.out.println("Choice is Invalid");
+            }
+        }
+    }
+
+    private static void bankToBankTransfer() {
+
+        // friend Account :
+        // input transfer
+        // your back -> deduction
+        // friend bank ->deposite
+
+    }
+
+    private static void withdrawMoney(Customer customer) {
+
+        System.out.print("Enter the withdraw Amount :");
+        double withdrawAmount = scanner.nextDouble();  // 1000
+        customer.getAccount().withdraw(withdrawAmount);
+
+    }
+
+    private static void deposit(Customer customer) {
+
+        System.out.print("Enter the Deposit Amount :");
+        double depAmount = scanner.nextDouble();  // 1000
+        customer.getAccount().deposit(depAmount);
+    }
+
+    private static void showBalance(Customer customer) {
+        System.out.println("Balance : "+customer.getAccount().getBalance());
+    }
 }
