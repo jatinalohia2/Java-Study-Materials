@@ -1,0 +1,88 @@
+-- ============================================
+-- DATABASE CREATION
+-- ============================================
+
+-- Create a new database
+CREATE DATABASE mysqldb;
+
+-- Select database to work on
+USE mysqldb;
+
+
+-- ============================================
+-- TABLE CREATION : EMPLOYEE
+-- ============================================
+
+-- Create employee table with different data types
+CREATE TABLE employee (
+    id INT,                                  -- Employee ID
+    first_name VARCHAR(100),                 -- Employee name
+    age INT,                                 -- Employee age
+    gender ENUM('male','female','other'),    -- Fixed gender values
+    dob DATE,                                -- Date of birth
+    created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Auto timestamp
+    active_emp BOOLEAN,                      -- Active employee (true/false)
+    salary DECIMAL(5,2)                      -- Salary (max 999.99)
+);
+
+
+-- ============================================
+-- TABLE CREATION : EMP1 (DECIMAL EXAMPLE)
+-- ============================================
+
+-- Table to demonstrate decimal precision & scale
+CREATE TABLE emp1 (
+    sal DECIMAL(8,3)     -- Total 8 digits, 3 digits after decimal
+);
+
+
+-- ============================================
+-- INSERT DATA INTO emp1
+-- ============================================
+
+-- Insert salary value
+INSERT INTO emp1(sal)
+VALUES (123456.09);
+
+
+-- ============================================
+-- SELECT QUERIES
+-- ============================================
+
+-- Fetch specific columns
+SELECT id, first_name FROM employee;
+
+-- Fetch all columns
+SELECT * FROM employee;
+
+
+-- ============================================
+-- INSERT DATA (WRONG EXAMPLE)
+-- ============================================
+
+-- ❌ This will FAIL because column count is mismatched
+-- Employee table has many columns but only 3 values given
+INSERT INTO employee
+VALUES (1, 'jatin', 12);
+
+
+-- ============================================
+-- INSERT DATA (CORRECT WAY)
+-- ============================================
+
+--  Always specify column names (Best Practice)
+INSERT INTO employee
+(id, first_name, age, gender, active_emp, dob, salary)
+VALUES
+(1, 'yamini', 12, 'male', TRUE, '2001-12-10', 50.01);
+
+
+-- ============================================
+-- DROP OPERATIONS (USE CAREFULLY)
+-- ============================================
+
+-- Delete employee table
+DROP TABLE employee;
+
+-- Delete entire database
+DROP DATABASE mysqldb;
