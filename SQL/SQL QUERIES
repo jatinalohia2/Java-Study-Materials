@@ -1,88 +1,332 @@
--- ============================================
--- DATABASE CREATION
--- ============================================
+/* =========================================================
+   MYSQL COMPLETE PRACTICE SCRIPT
+   Author : Training Version
+   Purpose : Learn MySQL Basics Step-by-Step
+=========================================================*/
+
+
+/* =========================================================
+   1. DATABASE CREATION
+=========================================================*/
 
 -- Create a new database
 CREATE DATABASE mysqldb;
 
--- Select database to work on
+-- Select database to work with
 USE mysqldb;
 
 
--- ============================================
--- TABLE CREATION : EMPLOYEE
--- ============================================
 
--- Create employee table with different data types
+/* =========================================================
+   2. TABLE CREATION : EMPLOYEE
+=========================================================*/
+
+-- Create employee table demonstrating different data types
 CREATE TABLE employee (
-    id INT,                                  -- Employee ID
-    first_name VARCHAR(100),                 -- Employee name
-    age INT,                                 -- Employee age
-    gender ENUM('male','female','other'),    -- Fixed gender values
-    dob DATE,                                -- Date of birth
+    id INT,                                   -- Employee ID
+    first_name VARCHAR(100),                  -- Employee Name
+    age INT,                                  -- Employee Age
+    gender ENUM('male','female','other'),     -- Fixed allowed values
+    dob DATE,                                 -- Date of Birth
     created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Auto timestamp
-    active_emp BOOLEAN,                      -- Active employee (true/false)
-    salary DECIMAL(5,2)                      -- Salary (max 999.99)
+    active_emp BOOLEAN,                       -- TRUE / FALSE value
+    salary DECIMAL(5,2)                       -- Max 999.99
 );
 
 
--- ============================================
--- TABLE CREATION : EMP1 (DECIMAL EXAMPLE)
--- ============================================
 
--- Table to demonstrate decimal precision & scale
+/* =========================================================
+   3. DECIMAL DATATYPE EXAMPLE
+=========================================================*/
+
+-- Table to understand precision & scale
 CREATE TABLE emp1 (
-    sal DECIMAL(8,3)     -- Total 8 digits, 3 digits after decimal
+    sal DECIMAL(8,3)   -- 8 total digits, 3 after decimal
 );
 
-
--- ============================================
--- INSERT DATA INTO emp1
--- ============================================
-
--- Insert salary value
+-- Insert sample value
 INSERT INTO emp1(sal)
 VALUES (123456.09);
 
 
--- ============================================
--- SELECT QUERIES
--- ============================================
 
--- Fetch specific columns
+/* =========================================================
+   4. SELECT STATEMENTS
+=========================================================*/
+
+-- Fetch selected columns
 SELECT id, first_name FROM employee;
 
 -- Fetch all columns
 SELECT * FROM employee;
 
 
--- ============================================
--- INSERT DATA (WRONG EXAMPLE)
--- ============================================
 
--- ❌ This will FAIL because column count is mismatched
--- Employee table has many columns but only 3 values given
+/* =========================================================
+   5. INSERT DATA (WRONG WAY)
+=========================================================*/
+
+-- ❌ ERROR:
+-- Column count does not match table columns
 INSERT INTO employee
 VALUES (1, 'jatin', 12);
 
 
--- ============================================
--- INSERT DATA (CORRECT WAY)
--- ============================================
 
---  Always specify column names (Best Practice)
+/* =========================================================
+   6. INSERT DATA (CORRECT WAY)
+=========================================================*/
+
+-- ✅ Best Practice: Always specify column names
 INSERT INTO employee
 (id, first_name, age, gender, active_emp, dob, salary)
 VALUES
-(1, 'yamini', 12, 'male', TRUE, '2001-12-10', 50.01);
+(1, 'akshita', 12, 'female', TRUE, '2001-12-10', 50.01);
 
 
--- ============================================
--- DROP OPERATIONS (USE CAREFULLY)
--- ============================================
 
--- Delete employee table
+/* =========================================================
+   7. DROP OPERATIONS
+=========================================================*/
+
+-- Delete table structure + data
 DROP TABLE employee;
 
 -- Delete entire database
 DROP DATABASE mysqldb;
+
+
+
+/* =========================================================
+   8. TABLE RENAME
+=========================================================*/
+
+-- Rename table
+RENAME TABLE emp TO customer;
+
+
+
+/* =========================================================
+   9. ALTER TABLE OPERATIONS
+=========================================================*/
+
+-- Add new column
+ALTER TABLE customer ADD COLUMN age INT;
+
+-- Drop and add column together
+ALTER TABLE customer
+DROP COLUMN id,
+ADD COLUMN sal2 INT;
+
+-- Modify datatype
+ALTER TABLE customer MODIFY COLUMN sal VARCHAR(50);
+
+-- Change column position
+ALTER TABLE employee MODIFY COLUMN gender VARCHAR(50) FIRST;
+
+ALTER TABLE employee MODIFY COLUMN age INT AFTER id;
+
+
+
+/* =========================================================
+   10. CREATE CUSTOMER TABLE (FINAL VERSION)
+=========================================================*/
+
+CREATE TABLE customer(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    age INT NOT NULL,
+    sal INT DEFAULT 1,
+    email VARCHAR(30) UNIQUE
+);
+
+SELECT * FROM customer;
+
+
+
+/* =========================================================
+   11. INSERT DATA
+=========================================================*/
+
+INSERT INTO customer(age, email, sal)
+VALUES (15, NULL, 100);
+
+
+
+/* =========================================================
+   12. DELETE OPERATIONS
+=========================================================*/
+
+-- Delete specific row
+DELETE FROM customer WHERE id = 2;
+
+SELECT * FROM customer;
+
+
+
+/* =========================================================
+   13. WHERE CONDITIONS
+=========================================================*/
+
+-- Not equal condition
+SELECT * FROM customer WHERE sal <> 300;
+
+-- NULL checking
+SELECT * FROM customer WHERE email IS NULL;
+SELECT * FROM customer WHERE email IS NOT NULL;
+
+
+
+/* =========================================================
+   14. FILTERING DATA
+=========================================================*/
+
+SELECT * FROM employee
+WHERE gender NOT IN ('male','female');
+
+-- LIKE operator
+SELECT * FROM employee WHERE first_name LIKE 'a%';
+SELECT * FROM employee WHERE first_name LIKE 'a%a';
+
+
+
+/* =========================================================
+   15. ORDER BY & LIMIT
+=========================================================*/
+
+SELECT * FROM customer ORDER BY age ASC;
+
+SELECT * FROM customer
+WHERE age < 15
+ORDER BY id DESC
+LIMIT 2;
+
+-- Pagination example
+SELECT * FROM customer LIMIT 2,2;
+
+
+
+/* =========================================================
+   16. UPDATE & DELETE
+=========================================================*/
+
+UPDATE customer
+SET age = 30, sal = 3000
+WHERE id > 3;
+
+DELETE FROM customer WHERE id = 1;
+
+
+/*
+DROP   → deletes structure + data
+DELETE → deletes selected rows
+TRUNCATE → deletes all rows only
+*/
+
+
+
+/* =========================================================
+   17. ADD NEW COLUMN
+=========================================================*/
+
+ALTER TABLE customer
+ADD COLUMN gender ENUM('male','female');
+
+SELECT * FROM customer;
+
+
+
+/* =========================================================
+   18. CONSTRAINTS
+=========================================================*/
+
+-- Unique constraint
+ALTER TABLE customer ADD CONSTRAINT unique_age UNIQUE(age);
+
+-- Check constraint
+ALTER TABLE customer
+ADD CONSTRAINT customer_chk
+CHECK(dob > '2001-10-06');
+
+-- Drop constraint
+ALTER TABLE customer DROP CONSTRAINT customer_chk;
+
+
+
+/* =========================================================
+   19. INSERT BULK DUMMY DATA
+=========================================================*/
+
+INSERT INTO customer (age, sal, email, dob, gender) VALUES
+(41,66000,'user21@example.com','2003-01-12','male'),
+(42,67000,'user22@example.com','2004-02-18','female'),
+(43,68000,'user23@example.com','2005-03-25','male'),
+(44,69000,'user24@example.com','2006-04-14','female'),
+(45,70000,'user25@example.com','2007-05-22','male'),
+(46,71000,'user26@example.com','2008-06-09','female'),
+(47,72000,'user27@example.com','2009-07-30','male'),
+(48,73000,'user28@example.com','2010-08-11','female'),
+(49,74000,'user29@example.com','2011-09-19','male'),
+(50,75000,'user30@example.com','2012-10-27','female');
+
+
+
+/* =========================================================
+   20. AGGREGATE FUNCTIONS
+=========================================================*/
+
+-- Count
+SELECT COUNT(*) AS total_count
+FROM customer
+WHERE gender = 'male';
+
+-- Max & Min
+SELECT MAX(sal) AS maximum_salary,
+       MIN(sal) AS minimum_salary
+FROM customer;
+
+-- Average
+SELECT AVG(sal) AS average_salary
+FROM customer;
+
+
+
+/* =========================================================
+   21. GROUP BY
+=========================================================*/
+
+SELECT gender AS gen,
+       SUM(sal) AS total_salary
+FROM customer
+GROUP BY gender;
+
+
+
+/* =========================================================
+   22. STRING FUNCTIONS
+=========================================================*/
+
+SELECT email,
+       LENGTH(gender) AS total_len
+FROM customer;
+
+SELECT CONCAT(gender,'(',age,')') AS info
+FROM customer;
+
+
+
+/* =========================================================
+   23. DATE FUNCTIONS
+=========================================================*/
+
+-- Current date & time
+SELECT NOW();
+
+-- Month name from date
+SELECT email,
+       MONTHNAME(dob) AS birth_month
+FROM customer;
+
+-- Days lived
+SELECT email,
+       DATEDIFF(CURDATE(), dob) AS days_lived
+FROM customer;
