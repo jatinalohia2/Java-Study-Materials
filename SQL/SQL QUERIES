@@ -330,3 +330,225 @@ FROM customer;
 SELECT email,
        DATEDIFF(CURDATE(), dob) AS days_lived
 FROM customer;
+
+SELECT sum(gender)
+FROM customer;
+
+
+-- ================================
+-- TRANSACTIONS EXAMPLE
+-- ================================
+
+-- Create account table
+CREATE TABLE account (
+    id INT,
+    name VARCHAR(20),
+    balance INT
+);
+
+-- View table data
+SELECT * FROM account;
+
+-- Insert sample record
+INSERT INTO account VALUES (3, 'isha', 1000);
+
+
+-- --------------------------------
+-- Start Transaction
+-- --------------------------------
+START TRANSACTION;
+
+-- Transfer 50 from account id = 1
+UPDATE account
+SET balance = balance - 50
+WHERE id = 1;
+
+-- Create savepoint after first update
+SAVEPOINT after_first_transfer;
+
+
+-- Add 300 to account id = 2
+UPDATE account
+SET balance = balance + 300
+WHERE id = 2;
+
+-- Save current state
+SAVEPOINT after_second_transfer;
+
+
+-- Deduct 300 from account id = 3
+UPDATE account
+SET balance = balance - 300
+WHERE id = 3;
+
+-- Savepoint again
+SAVEPOINT after_third_transfer;
+
+
+-- Rollback only last operation
+-- Database returns to after_second_transfer state
+ROLLBACK TO after_second_transfer;
+
+-- (Optional) Make changes permanent
+-- COMMIT;
+
+
+-- ================================
+-- PARENT - CHILD RELATIONSHIP
+-- ================================
+
+-- Parent Table
+CREATE TABLE student (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20),
+    age INT
+);
+
+-- Child Table
+CREATE TABLE course (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(20),
+    student_id INT,
+    
+    -- If parent deleted → child auto deleted
+    FOREIGN KEY(student_id)
+    REFERENCES student(id)
+    ON DELETE CASCADE
+);
+
+-- Insert students
+INSERT INTO student(name, age)
+VALUES
+('jatin', 12),
+('amrit', 13),
+('janvi', 14);
+
+SELECT * FROM student;
+
+-- Assign course to student id = 2
+INSERT INTO course(course_name, student_id)
+VALUES ('Python', 2);
+
+SELECT * FROM course;
+
+-- Delete course manually
+DELETE FROM course WHERE id = 1;
+
+
+-- --------------------------------
+-- CASCADE EXAMPLE
+-- --------------------------------
+-- When student id=2 is deleted,
+-- related course rows delete automatically
+DELETE FROM student WHERE id = 2;
+
+
+
+-- ================================
+-- JOINS EXAMPLE
+-- ================================
+
+-- Class table
+CREATE TABLE class (
+    class_id INT PRIMARY KEY AUTO_INCREMENT,
+    class_name VARCHAR(50)
+);
+
+-- Student table
+CREATE TABLE student (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_name VARCHAR(50),
+    class_id INT,
+    
+    FOREIGN KEY(class_id)
+    REFERENCES class(class_id)
+);
+
+-- Insert classes
+INSERT INTO class(class_name)
+VALUES ('Punjabi'), ('Haryanvi'), ('English');
+
+-- Insert students
+INSERT INTO student(student_name, class_id)
+VALUES
+('Priya', NULL),   -- no class assigned
+('Aman', 2),
+('Janvi', 3);
+
+SELECT * FROM student;
+SELECT * FROM class;
+
+--  INNER JOIN
+
+-- Shows only matching records
+SELECT student.student_name, class.class_name
+FROM student
+INNER JOIN class
+ON student.class_id = class.class_id;
+
+
+-- All students + matching classes
+SELECT student.student_name, class.class_name
+FROM student
+LEFT JOIN class
+ON student.class_id = class.class_id;
+
+-- All classes + matching students
+SELECT student.student_name, class.class_name
+FROM student
+RIGHT JOIN class
+ON student.class_id = class.class_id;
+
+
+SELECT student.student_name, class.class_name
+FROM student
+LEFT JOIN class
+ON student.class_id = class.class_id
+
+UNION
+
+SELECT student.student_name, class.class_name
+FROM student
+RIGHT JOIN class
+ON student.class_id = class.class_id;
+
+
+-- Every student combined with every class
+SELECT COUNT(*)
+FROM student
+CROSS JOIN class;
+
+
+-- ================================
+-- SELF JOIN EXAMPLE
+-- ================================
+
+CREATE TABLE employee (
+    emp_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50),
+    manager_id INT,
+    
+    -- Employee references another employee as manager
+    FOREIGN KEY(manager_id)
+    REFERENCES employee(emp_id)
+);
+
+-- Insert employees
+INSERT INTO employee(name, manager_id)
+VALUES
+('jatin', 9),
+('jatin', 10);
+
+SELECT * FROM employee;
+
+
+-- Show employee with their manager name
+SELECT
+    e1.emp_id,
+    e1.name AS employee,
+    e2.name AS manager
+FROM employee e1
+RIGHT JOIN employee e2
+ON e1.emp_id = e2.manager_id;
+
+
