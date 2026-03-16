@@ -551,4 +551,98 @@ FROM employee e1
 RIGHT JOIN employee e2
 ON e1.emp_id = e2.manager_id;
 
+-- SQL – INDEX | VIEW | TRIGGER | PROCEDURE (ONE PAGE NOTES)
+-- TABLE CREATE + DATA
+-- Employees table
+CREATE TABLE employees(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(25),
+    age INT,
+    salary INT
+);
+
+-- Insert data
+INSERT INTO employees(name, age, salary) VALUES
+('Rahul',21,10000),
+('Aman',22,20000),
+('Riya',23,30000),
+('Neha',24,40000);
+
+SELECT * FROM employees;
+-- INDEX (Search Fast Banata Hai)
+-- Create Index (name + age par fast search)
+CREATE INDEX emp_name_age_idx
+ON employees(name, age);
+
+-- Use index (fast searching)
+SELECT * FROM employees
+WHERE name='Rahul' AND age=21;
+
+-- Show indexes
+SHOW INDEXES FROM employees;
+
+-- Delete index
+DROP INDEX emp_name_age_idx ON employees;
+
+-- Concept: Index = Book ka index page → data jaldi milta hai.
+
+-- VIEW (Virtual Table)
+-- View create
+CREATE VIEW employee_view AS
+SELECT id, name, salary FROM employees;
+
+-- View use
+SELECT * FROM employee_view;
+
+-- Concept: View = Original table ka selected data.
+
+--  TRIGGER (Automatic Action)
+-- Candidate table
+CREATE TABLE candidate(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50)
+);
+
+-- Log table
+CREATE TABLE candidate_log(
+    message VARCHAR(50)
+);
+
+-- Trigger (after insert)
+CREATE TRIGGER candidate_insert
+AFTER INSERT ON candidate
+FOR EACH ROW
+INSERT INTO candidate_log(message)
+VALUES ('Candidate Successfully Added');
+
+-- Insert data
+INSERT INTO candidate(name) VALUES('Jatin');
+
+SELECT * FROM candidate_log;
+
+-- Concept: Trigger = Automatic event (jaise notification).
+
+🔹 5. PROCEDURE (Reusable SQL Function)
+DELIMITER $$
+
+CREATE PROCEDURE get_candidates()
+BEGIN
+    SELECT * FROM candidate;
+END $$
+
+DELIMITER ;
+
+-- Call procedure
+CALL get_candidates();
+
+-- Concept: Procedure = Ek baar likho, baar-baar use karo.
+
+
+
+
+
+
+
+
+ 
 
