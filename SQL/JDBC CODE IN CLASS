@@ -1,0 +1,128 @@
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+
+public class JdbcEx {
+
+    public static void main(String[] args) {
+
+        // JDBC objects
+        Connection connection = null;
+        PreparedStatement psSelect = null;
+        PreparedStatement psInsert = null;
+        ResultSet rs = null;
+
+        try {
+
+            // =====================================================
+            // STEP 1 : Load JDBC Driver
+            // =====================================================
+            // Driver class registers itself with DriverManager
+            // so Java knows HOW to talk to MySQL database.
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // =====================================================
+            // STEP 2 : Create Connection
+            // =====================================================
+            // Establish connection between Java application and DB
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/mysqldb",
+                    "root",
+                    "ajstyles"
+            );
+
+            System.out.println("Connection created: " + connection);
+
+            // =====================================================
+            // STEP 3 : Create PreparedStatement (SELECT)
+            // =====================================================
+            // SQL query is precompiled by database
+            String selectQuery = "SELECT * FROM customer";
+            psSelect = connection.prepareStatement(selectQuery);
+
+            // =====================================================
+            // STEP 4 : Execute Query
+            // =====================================================
+            // executeQuery() is used ONLY for SELECT statements
+            rs = psSelect.executeQuery();
+
+            // =====================================================
+            // STEP 5 : Process ResultSet
+            // =====================================================
+            // ResultSet contains rows returned from database
+            while (rs.next()) {
+
+                // Fetch column values (index starts from 1)
+                int id = rs.getInt(1);
+                int age = rs.getInt(2);
+                int sal = rs.getInt(3);
+                String email = rs.getString(4);
+
+                Date date = rs.getDate(5);
+                Time time = rs.getTime(5); // assuming datetime column
+
+                String gender = rs.getString(6);
+
+                // Print each row
+                System.out.println(
+                        id + " : " + age + " : " + sal + " : "
+                                + email + " : " + date + " : "
+                                + time + " : " + gender);
+            }
+
+            // =====================================================
+            // STEP 6 : INSERT Operation using PreparedStatement
+            // =====================================================
+            // '?' is positional parameter (placeholder)
+            String insertQuery = "INSERT INTO cust(name) VALUES(?)";
+
+            psInsert = connection.prepareStatement(insertQuery);
+
+            // Bind value to placeholder
+            psInsert.setString(1, "aman");
+
+            // executeUpdate() used for INSERT/UPDATE/DELETE
+            int rowsAffected = psInsert.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Record added successfully.");
+            } else {
+                System.out.println("Record not added.");
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        finally {
+
+            // =====================================================
+            // STEP 7 : Close Resources (Very Important)
+            // =====================================================
+            // Always close in reverse order to avoid memory leaks
+
+            try {
+                if (rs != null)
+                    rs.close();
+
+                if (psSelect != null)
+                    psSelect.close();
+
+                if (psInsert != null)
+                    psInsert.close();
+
+                if (connection != null)
+                    connection.close();
+
+                System.out.println("Resources closed.");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
