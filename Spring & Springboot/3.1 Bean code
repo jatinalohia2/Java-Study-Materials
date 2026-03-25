@@ -1,0 +1,135 @@
+package com.techtamasha.techtamasha;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.techtamasha.techtamasha.beans.Apple;
+import com.techtamasha.techtamasha.beans.Banana;
+
+@SpringBootApplication
+public class TechtamashaApplication implements CommandLineRunner{
+
+	@Autowired  
+	Apple apple1;
+	
+	@Autowired  
+	Apple apple2;
+	
+	@Autowired  
+	Apple apple3;
+	
+	
+	
+	public static void main(String[] args) {
+		SpringApplication.run(TechtamashaApplication.class, args);
+	
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+
+		Apple a1 = new Apple();
+		a1.eat();
+		
+		Apple a2 = new Apple();
+		a2.eat();
+		
+		
+		System.out.println("a1 hashcode :"+a1.hashCode());
+		System.out.println("a2 hashcode :"+a2.hashCode());
+		
+		System.out.println("apple 1 : "+apple1.hashCode());
+		System.out.println("apple 2 : "+apple2.hashCode());
+		System.out.println("apple 3 : "+apple3.hashCode());
+	}
+}
+
+
+---------------------------------------------------------------------------------------
+
+package com.techtamasha.techtamasha.beans;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
+@Component // bean create krna 
+//@Scope("singleton")
+@Scope("prototype")
+public class Apple {
+
+	public void eat() {
+		System.out.println("I m eating apple");
+	}
+	
+	@PostConstruct
+	public void initializedBean() {
+		System.out.println("starts server....");
+	}
+	
+	@PreDestroy
+	public void afterDestroy() {
+		System.out.println("close all the resources..");
+	}
+
+}
+
+
+-----------------------------------------------------------------------------
+
+package com.techtamasha.techtamasha.beans;
+
+public class Banana {
+
+	public void eat() {
+		System.out.println("eating banana");
+	}
+}
+
+---------------------------------------------------------------------------------
+
+package com.techtamasha.techtamasha;
+
+import java.nio.channels.ConnectionPendingException;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.techtamasha.techtamasha.beans.Banana;
+import com.techtamasha.techtamasha.beans.Weather;
+
+@Configuration
+public class Config {
+	
+	// exp. creattion method :
+	
+	@Bean
+	public Weather weather() {
+		return new Weather();
+	}
+
+	@Bean
+	public Banana banana() {
+		return new Banana();
+	}
+	
+	
+}
+
+
+----------------------------------------------------------------------------
+
+package com.techtamasha.techtamasha.beans;
+
+public class Weather {
+
+	public void getWeather(String city) {
+		System.out.println("30 degree..");
+	}
+}
+
+----------------------------------------------------------------------------
