@@ -1,0 +1,184 @@
+Controller Annotation
+----------------------------------------------
+@Controller
+Marks class as web controller.
+Used to return HTML pages.
+Works with Thymeleaf.
+
+-----------------------------------------------
+@Controller
+public class HomeController {
+}
+
+-----------------------------------------------
+
+@RestController
+Used for API.
+Returns JSON data.
+@Controller + @ResponseBody
+
+-------------------------------------------------
+
+4️⃣ Request Mapping Annotations
+
+✅ @RequestMapping
+Purpose
+
+Map URL to method/class.
+
+@RequestMapping("/home")
+Can be used on:
+Class level
+Method level
+
+Example
+@Controller
+@RequestMapping("/user")
+public class UserController {
+
+    @RequestMapping("/profile")
+    public String profile() {
+        return "profile";  // html page inside template folder
+    }
+}
+
+👉 URL → /user/profile
+
+@GetMapping
+Purpose
+
+Handle GET requests only.
+Example:
+
+@GetMapping("/home")
+public String home() {
+    return "home";
+}
+
+5️⃣ Returning View from Controller
+
+@GetMapping("/")
+public String index() {
+    return "index";
+}
+
+✔ Spring looks inside:
+resources/templates/index.html
+
+-------------------------------------------------------------------
+
+6️⃣ Model Object (Sending Data to View)
+@GetMapping("/welcome")
+public String welcome(Model model) {
+    model.addAttribute("name", "Jatin");
+    return "welcome";
+}
+
+------------------------------------------------------------------
+
+7️⃣ What is Thymeleaf?
+Server-side template engine.
+Used to create dynamic HTML.
+Works with Spring Boot.
+HTML + dynamic data.
+
+8️⃣ Thymeleaf File Location
+src/main/resources/templates/
+
+Example:
+
+index.html
+home.html
+
+-----------------------------------------------------------------------
+
+9️⃣ Thymeleaf Syntax
+Display Data
+<p th:text="${name}"></p>
+
+Output:
+Jatin
+
+Variables
+${variableName}
+
+Set Attribute
+
+<a th:href="@{/home}">Home</a>
+----------------------------------------------------------
+
+Conditional
+<p th:if="${age > 18}">Adult</p>
+<p th:unless="${age > 18}">Adult</p>
+
+-----------------------------------------------------------
+
+Loop
+<ul>
+  <li th:each="user : ${users}" 
+      th:text="${user}">
+  </li>
+</ul>
+
+-----------------------------------------------------------
+
+🔟 Controller + Thymeleaf Full Flow
+Browser sends request.
+Controller receives request.
+Controller prepares data.
+Data added to Model.
+Thymeleaf template loads.
+HTML generated.
+Response sent to browser.
+
+------------------------------------------------------------
+
+1️⃣1️⃣ Folder Structure (Spring Boot)
+src
+ └── main
+     ├── java
+     │    └── controller
+     └── resources
+          ├── templates
+          └── static
+          
+1️⃣2️⃣ Static Files Location
+resources/static/
+
+Used for:
+
+CSS
+JS
+Images
+
+------------------------------------------------------
+
+1️⃣3️⃣ Example Complete Code:
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/home")
+    public String home(Model model) {
+        model.addAttribute("message", "Hello Students");
+        return "home";
+    }
+}
+
+home.html
+
+<h1 th:text="${message}"></h1>
+
+✅ Quick Revision:
+
+Web server handles requests.
+
+@Controller → returns HTML.
+
+@RequestMapping → URL mapping.
+
+@GetMapping → GET request.
+
+Model → send data to view.
+
+Thymeleaf → dynamic HTML engine.
