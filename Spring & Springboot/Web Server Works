@@ -1,0 +1,31 @@
+1️⃣ How a Web Server Works (Flow)
+Basic Flow
+User opens browser.
+User enters URL → http://example.com/home
+Browser sends HTTP Request to server.
+Web Server receives request.
+Server processes request using backend code.
+Server sends HTTP Response (HTML/JSON).
+Browser renders page.
+
+-------------------------------------------------------
+
+Request–Response Cycle
+Client → Request → Server
+Server → Response → Client
+
+-------------------------------------------------------
+
+Components
+Client → Browser (Chrome, Edge)
+Web Server → Tomcat / Jetty
+Application → Spring Boot App
+Database → MySQL/PostgreSQL (optional)
+
+-------------------------------------------------------
+
+HTTP Methods
+GET → Fetch data
+POST → Send data
+PUT → Update data
+DELETE → Delete data
