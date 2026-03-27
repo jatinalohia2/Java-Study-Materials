@@ -1,0 +1,274 @@
+package com.techtamasha.techtamasha.entity;
+
+// JPA annotations used for database mapping
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+/*
+ * @Entity
+ * Marks this class as a JPA Entity.
+ * It means this class will be mapped to a database table.
+ */
+@Entity
+
+/*
+ * @Table
+ * Specifies the table name in the database.
+ * If not given, table name = class name (Student).
+ */
+@Table(name = "pisoft_student")
+public class Student {
+
+    /*
+     * @Id
+     * Marks this field as PRIMARY KEY of the table.
+     */
+    @Id
+
+    /*
+     * @GeneratedValue
+     * Automatically generates ID values.
+     * GenerationType.AUTO lets JPA decide strategy.
+     */
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id; // Primary Key
+
+
+    /*
+     * Default Constructor
+     * Required by JPA/Hibernate to create objects using reflection.
+     */
+    public Student() {}
+
+
+    /*
+     * @Column
+     * Used to customize column properties in database.
+     *
+     * name = "student_name"  → column name in DB
+     * nullable = false       → cannot store NULL value
+     * updatable = false      → value cannot be updated after insert
+     * unique = true          → duplicate values not allowed
+     * length = 10            → max character length = 10
+     */
+    @Column(
+        name = "student_name",
+        nullable = false,
+        updatable = false,
+        unique = true,
+        length = 10
+    )
+    private String name;
+
+    // Course name of the student
+    private String course;
+
+    // Student age
+    private Integer age;
+
+    // Phone number (Integer used here, but Long/String is better in real apps)
+    private Integer phn;
+
+    // Father's name
+    private String fatherName;
+
+    // Mother's name
+    private String motherName;
+
+
+    /*
+     * Parameterized Constructor
+     * Used to create object with values.
+     */
+    public Student(Integer id, String name, String course, Integer age,
+                   Integer phn, String fatherName, String motherName) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.course = course;
+        this.age = age;
+        this.phn = phn;
+        this.fatherName = fatherName;
+        this.motherName = motherName;
+    }
+
+}
+
+--------------------------------------------------------------------------------------------------------
+
+
+package com.techtamasha.techtamasha.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.techtamasha.techtamasha.entity.Student;
+
+/*
+ * @Repository
+ * Indicates that this interface is a Data Access Layer (DAO).
+ * Spring automatically detects it during component scanning.
+ */
+@Repository
+
+/*
+ * StudentRepository Interface
+ *
+ * JpaRepository<EntityClass, PrimaryKeyDatatype>
+ *
+ * EntityClass → Student
+ * PrimaryKeyDatatype → Integer (id field type)
+ *
+ * By extending JpaRepository, we automatically get:
+ *  - save()
+ *  - findById()
+ *  - findAll()
+ *  - deleteById()
+ *  - update operations
+ *  - pagination & sorting
+ *
+ * No need to write SQL queries manually.
+ */
+public interface StudentRepository extends JpaRepository<Student, Integer>{
+
+    // No code required here for basic CRUD operations.
+    // Spring Data JPA automatically provides implementations.
+
+}
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+package com.techtamasha.techtamasha;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.techtamasha.techtamasha.entity.Student;
+import com.techtamasha.techtamasha.repository.StudentRepository;
+
+/*
+ * @Component
+ * Marks this class as a Spring Bean.
+ * Spring automatically creates object of this class
+ * and manages its lifecycle (IOC Container).
+ *
+ * NOTE:
+ * Normally controllers use @Controller or @RestController.
+ * Here @Component is used just for testing/business logic.
+ */
+@Component
+public class StudentController {
+
+    /*
+     * @Autowired
+     * Dependency Injection.
+     * Spring automatically injects StudentRepository object.
+     * No need to create object manually using new keyword.
+     */
+    @Autowired
+    StudentRepository studentRepository;
+
+    /*
+     * Method to save and delete student data
+     */
+    public void saveStudent() {
+
+        /*
+         * Creating Student object.
+         * id = null → database will auto-generate ID
+         */
+        Student student = new Student(null, "jatin", "bca", 12, 90, "hello", "hii");
+
+        /*
+         * save()
+         * Inserts record into database.
+         * If ID exists → update
+         * If ID is null → insert
+         */
+        studentRepository.save(student); // INSERT into table
+
+
+        /*
+         * Creating another student object
+         * Here id = 1 means record with ID 1.
+         */
+        Student student1 = new Student(1, "jatin", "bca", 12, 90, "hello", "hii");
+
+        /*
+         * delete()
+         * Deletes matching entity from database.
+         * Usually we delete using ID (better practice).
+         */
+        studentRepository.delete(student1);
+    }
+}
+
+--------------------------------------------------------------------------------------------------------
+
+package com.techtamasha.techtamasha;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/*
+ * @SpringBootApplication
+ *
+ * This is the MAIN class of Spring Boot.
+ * It is the starting point of the application.
+ *
+ * It is a combination of:
+ * 1. @Configuration  → Java configuration class
+ * 2. @EnableAutoConfiguration → Auto setup by Spring Boot
+ * 3. @ComponentScan → Scans all components automatically
+ */
+@SpringBootApplication
+
+/*
+ * CommandLineRunner
+ *
+ * Interface used to run code AFTER
+ * Spring Boot application starts successfully.
+ *
+ * Useful for:
+ * - Testing database
+ * - Initial data insert
+ * - Running startup logic
+ */
+public class TechtamashaApplication implements CommandLineRunner {
+
+    /*
+     * Injecting StudentController bean using Dependency Injection
+     * Spring automatically provides object.
+     */
+    @Autowired
+    StudentController studentController;
+
+
+    /*
+     * main() method
+     * Entry point of Java application.
+     * Starts Spring Boot server and IOC container.
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(TechtamashaApplication.class, args);
+    }
+
+
+    /*
+     * run() method executes automatically
+     * after application startup.
+     */
+    @Override
+    public void run(String... args) throws Exception {
+
+        // Calling method to save & delete student
+        studentController.saveStudent();
+    }
+}
