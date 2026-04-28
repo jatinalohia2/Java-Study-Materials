@@ -1,0 +1,41 @@
+package multithreading;
+
+class MyDaemonThread extends Thread {
+
+	@Override
+	public void run() {
+
+		while (true) {
+
+			System.out.println("Daemon thread running...");
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+}
+
+public class MainDaemon {
+
+	public static void main(String[] args) {
+
+		MyDaemonThread daemonThread = new MyDaemonThread();
+		daemonThread.setDaemon(true); //
+		daemonThread.start();
+
+		try {
+			Thread.sleep(5000);
+			System.out.println("Main thread finished execution.");
+
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+}
