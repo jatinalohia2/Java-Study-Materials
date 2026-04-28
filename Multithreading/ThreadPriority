@@ -1,1 +1,38 @@
 
+package multithreading;
+
+class ThreadPriority extends Thread{
+
+	 public ThreadPriority(String name) {
+	        super(name);
+	    }
+
+	 
+	@Override
+	public void run() {
+        System.out.println(Thread.currentThread().getName() + " is running with priority " + Thread.currentThread().getPriority());
+	}
+	
+	
+}
+
+public class ThreadPriorityExample {
+
+	public static void main(String[] args) {
+		
+		ThreadPriority t1 = new ThreadPriority("T1");
+		ThreadPriority t2 = new ThreadPriority("T2");
+		ThreadPriority t3 = new ThreadPriority("T3");
+
+		t1.setPriority(8);
+		t2.setPriority(4);
+		t3.setPriority(5);
+		
+        
+		t1.start();
+		t2.start();
+		t3.start();
+        
+		
+	}
+}
