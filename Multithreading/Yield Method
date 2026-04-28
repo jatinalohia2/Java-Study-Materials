@@ -1,0 +1,44 @@
+package multithreading;
+
+class Customer extends Thread {
+
+	String name;
+	int items;
+
+	public Customer(String name, int items) {
+		super();
+		this.name = name;
+		this.items = items;
+	}
+
+	@Override
+	public void run() {
+
+		System.out.println(name + " has " + items + " items and is at the counter.");
+
+		if (items < 5) {
+			// yield : kisi or ko mauka dedo :
+			System.out.println(name + " has too many items, allowing another customer first...");
+			Thread.yield();
+		}
+
+		System.out.println(name + " is paying for items.");
+
+	}
+
+}
+
+public class YieldExample {
+
+	public static void main(String[] args) {
+		
+		Customer customer1 = new Customer("palak", 6);
+		Customer customer2 = new Customer("Jatin", 3);
+		Customer customer3 = new Customer("gurinder", 2);
+		
+		customer1.start();
+		customer2.start();
+		customer3.start();
+
+	}
+}
