@@ -1,0 +1,42 @@
+package multithreading;
+
+
+class OrderProcessing extends Thread{
+
+	@Override
+	public void run() {
+		
+		for (int i = 0; i < 10; i++) {
+            System.out.println("Processing order step " + i);
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+                System.out.println("Order processing was interrupted!");
+				return;
+			}
+			
+		}
+		
+	}
+	
+	
+}
+
+public class Shopping {
+
+	public static void main(String[] args) {
+		
+		OrderProcessing orderProcessing = new OrderProcessing();
+		orderProcessing.start();
+		
+		try {
+			Thread.sleep(5000);
+			orderProcessing.interrupt();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+}
