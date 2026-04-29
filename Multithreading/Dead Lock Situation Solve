@@ -1,0 +1,38 @@
+class Pen {
+	void usePen(Notebook notebook) {
+
+		synchronized (Pen.class) { // Lock 1
+			System.out.println(Thread.currentThread().getName() + " locked Pen, wants Notebook");
+
+			synchronized (Notebook.class) { // Lock 2
+				System.out.println(Thread.currentThread().getName() + " got both Pen and Notebook");
+			}
+		}
+	}
+}
+
+class Notebook {
+
+	void useNotebook(Pen pen) {
+
+		synchronized (Pen.class) { // Lock 1 (same order as above!)
+			System.out.println(Thread.currentThread().getName() + " locked Pen, wants Notebook");
+			synchronized (Notebook.class) { // Lock 2
+				System.out.println(Thread.currentThread().getName() + " got both Notebook and Pen");
+			}
+		}
+	}
+}
+
+public class DeadlockDemo {
+	public static void main(String[] args) {
+		Pen pen = new Pen();
+		Notebook notebook = new Notebook();
+
+		Thread t1 = new Thread(() -> pen.usePen(notebook), "PRIYA");
+		Thread t2 = new Thread(() -> notebook.useNotebook(pen), "RAHUL");
+
+		t1.start();
+		t2.start();
+	}
+}
