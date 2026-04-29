@@ -1,0 +1,38 @@
+package multithreading;
+
+class Pen {
+
+	synchronized void usePen(Notebook notebook) {
+
+		System.out.println(Thread.currentThread().getName() + " locked Pen, wants Notebook");
+
+		synchronized (notebook) {
+			System.out.println(Thread.currentThread().getName() + " got both Pen and Notebook");
+		}
+	}
+}
+
+class Notebook {
+
+	synchronized void useNotebook(Pen pen) {
+
+		System.out.println(Thread.currentThread().getName() + " locked Notebook, wants Pen");
+
+		synchronized (pen) {
+			System.out.println(Thread.currentThread().getName() + " got both Notebook and Pen");
+		}
+	}
+}
+
+public class DeadlockDemo {
+	public static void main(String[] args) {
+		Pen pen = new Pen();
+		Notebook notebook = new Notebook();
+
+		Thread t1 = new Thread(() -> pen.usePen(notebook), "PRIYA");
+		Thread t2 = new Thread(() -> notebook.useNotebook(pen), "RAHUL");
+
+		t1.start();
+		t2.start();
+	}
+}
