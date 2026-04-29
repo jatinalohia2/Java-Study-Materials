@@ -1,0 +1,47 @@
+package multithreading;
+
+class Payment extends Thread {
+
+	@Override
+	public void run() {
+
+		System.out.println("Processing payment...");
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Payment Completed...");
+	}
+}
+
+class OrderConfirmation extends Thread {
+
+	@Override
+	public void run() {
+		System.out.println("Confirming order...");
+		System.out.println("Order confirmed! ✅");
+
+	}
+}
+
+public class JoinMethodExample {
+
+	public static void main(String[] args) {
+		
+		Payment payment = new Payment();
+		payment.start();
+		
+		try {
+			payment.join(); // compl...
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		OrderConfirmation confirmation = new OrderConfirmation();
+		confirmation.start();
+
+	}
+}
