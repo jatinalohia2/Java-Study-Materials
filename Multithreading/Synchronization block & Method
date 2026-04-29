@@ -1,0 +1,75 @@
+package multithreading;
+
+class BankAccount {
+
+	static int balance = 100;
+
+	// 1. symc. method
+	
+//  synchronized static void withdraw(int amt) {
+//
+//		if (balance >= amt) {
+//
+//			System.out.println(Thread.currentThread().getName() + " is withdrawing " + amt);
+//			balance -= amt;
+//			System.out.println("Remaining balance: " + balance);
+//
+//		} else {
+//			System.out.println(Thread.currentThread().getName() + " cannot withdraw. Insufficient balance!");
+//			System.out.println("Current balance: " + balance);
+//		}
+//
+//	}
+	
+//	2. sync block
+	
+	 static void withdraw(int amt) {
+		
+		System.out.println("this code is common for all ");
+
+		synchronized (BankAccount.class) {
+			
+			if (balance >= amt) {
+
+				System.out.println(Thread.currentThread().getName() + " is withdrawing " + amt);
+				balance -= amt;
+				System.out.println("Remaining balance: " + balance);
+
+			} else {
+				System.out.println(Thread.currentThread().getName() + " cannot withdraw. Insufficient balance!");
+				System.out.println("Current balance: " + balance);
+			}
+		}
+		
+		System.out.println("end of the block");
+
+	}
+
+}
+
+class Customers extends Thread {
+
+	static BankAccount bankAccount;
+	int amount;
+
+	@Override
+	public void run() {
+		bankAccount.withdraw(amount);
+	}
+
+}
+
+public class SyncronizationExample {
+
+	public static void main(String[] args) {
+
+		Customers jatin = new Customers();
+		jatin.amount = 50;
+		jatin.start();
+
+		Customers abhay = new Customers();
+		abhay.amount = 100;
+		abhay.start();
+
+	}
+}
